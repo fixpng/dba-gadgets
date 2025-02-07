@@ -3,9 +3,9 @@ import sys
 
 # 定义文件/目录与描述的映射
 description_map = {
-    "01-backup-and-archive": "备份和存档相关脚本",
-    "02-data-processing": "数据处理工具",
-    "03-files-processing": "文件处理工具"
+    "01-backup-and-archive": "备份和归档",
+    "02-data-processing": "数据处理",
+    "03-files-processing": "文件处理"
 }
 
 def tree(directory, padding, only_dirs=False, only_files=False):
