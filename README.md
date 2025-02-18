@@ -5,16 +5,19 @@ DBA工作中个人工具脚本整合
 dba-gadgets
 ├── 01-backup-and-archive | 备份和归档
 │   ├── mongo_backup_mongodump.sh
+│   ├── mysql_backup_mysqldump.sh
 │   └── mysql_restore_xtrabackup.py
 ├── 02-data-processing | 数据处理
 │   ├── oracle_clear_tabhwm
 │   │   ├── oracle_f_get_part.sql
-│   │   └── oracle_proc_clear_tabhwm.sql
+│   │   ├── oracle_proc_clear_tabhwm.sql
+│   │   └── oracle_tb_clear_hwm.sql
 │   ├── oracle_job_log
 │   │   ├── oracle_proc_job_log.sql
 │   │   └── oracle_tb_job_log.sql
 │   ├── oracle_proc_Increment_seq.sql
 │   ├── oracle_table_tool
+│   │   ├── oracle_f_str_split.sql
 │   │   ├── oracle_pkg_tab_tool.sql
 │   │   └── oracle_tb_tab_tool.sql
 │   ├── redis_del_big_list.py

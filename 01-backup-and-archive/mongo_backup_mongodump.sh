@@ -5,16 +5,16 @@
 BASEDIR="/datacfs/mongobak"
 BKDATE=$(date "+%Y%m%d")
 LOGFILE="${BASEDIR}/backup_mongo.log"
-# MongoDB 命令路径
+# mongodump 和 mongosh 命令路径
 MONGODUMP="/usr/local/mongodb/bin/mongodump"
+MONGOSH="/usr/local/mongodb/bin/mongosh"
 
 # 日志函数
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOGFILE"
 }
 
-
-# 主机和备份配置信息（IP, 端口, 用户名, 密码, 数据库）
+# 主机和备份配置信息（IP, 端口, 用户名, 密码, 认证数据库）
 declare -A MONGO_CONFIGS=(
     ["fatmongo.fixpng.top"]="27017 backup_user:aaa123456 admin"
     ["devmongo.fixpng.top"]="27017 backup_user:aaa123456 admin"
@@ -24,7 +24,7 @@ declare -A MONGO_CONFIGS=(
 
 # 创建备份目录并执行备份
 for HOST in "${!MONGO_CONFIGS[@]}"; do
-    IFS=' ' read -r PORT CREDENTIAL AUTH_DB DB <<< "${MONGO_CONFIGS[$HOST]}"
+    IFS=' ' read -r PORT CREDENTIAL AUTH_DB <<< "${MONGO_CONFIGS[$HOST]}"
     USERPASS=(${CREDENTIAL//:/ })
     USER=${USERPASS[0]}
     PASS=${USERPASS[1]}
@@ -32,13 +32,14 @@ for HOST in "${!MONGO_CONFIGS[@]}"; do
     BACKUP_DIR="${BASEDIR}/${HOST}/${BKDATE}"
     mkdir -pv "$BACKUP_DIR"
 
-    DATABASE_FLAG=""
-    if [ -n "$DB" ]; then
-        DATABASE_FLAG="-d $DB"
-    fi
+    # 获取数据库列表（排除系统数据库）
+    DBS=$($MONGOSH --quiet --host "$HOST" --port "$PORT" --username "$USER" --password "$PASS" --authenticationDatabase="$AUTH_DB" --eval 'db.getMongo().getDBs().databases.filter(d => !["admin", "config", "local"].includes(d.name)).map(d => d.name).join("\n")')
 
-    log "Backing up ${HOST}:${PORT} to ${BACKUP_DIR}"
-    $MONGODUMP --host "$HOST" --port "$PORT" -u"$USER" -p"$PASS" --authenticationDatabase="$AUTH_DB" $DATABASE_FLAG -o "$BACKUP_DIR"
+    for DB in $DBS; do
+        ARCHIVE_FILE="${BACKUP_DIR}/${DB}.tgz"
+        log "Backing up ${HOST}:${PORT} database ${DB} to ${ARCHIVE_FILE}"
+        $MONGODUMP --host "$HOST" --port "$PORT" -u"$USER" -p"$PASS" --authenticationDatabase="$AUTH_DB" -d "$DB" --gzip --archive="$ARCHIVE_FILE"
+    done
 done
 
 # 删除超过6天的备份
