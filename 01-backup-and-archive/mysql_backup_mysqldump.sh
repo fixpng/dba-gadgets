@@ -1,5 +1,5 @@
 #!/bin/bash
-# 最简单的mysqldump批量备份脚本
+# mysqldump多实例批量备份脚本
 
 # 定义基本目录和日期变量
 BASEDIR="/datacfs/mysqlbak"
