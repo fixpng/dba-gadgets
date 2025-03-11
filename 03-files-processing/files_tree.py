@@ -19,6 +19,7 @@ description_map = {
     "02-data-processing": "数据处理",
     "03-files-processing": "文件处理",
     "04-db-check": "数据库检查",
+    "05-db-install": "数据库安装",
 }
 
 def tree(directory, padding, only_dirs=False, only_files=False, markdown=False):

@@ -36,3 +36,8 @@ dba-gadgets
   - [mysql_f_rollback_time_calc.sql](./04-db-check/mysql_f_rollback_time_calc.sql)
   - [mysql_pt_slave_repair.py](./04-db-check/mysql_pt_slave_repair.py)
   - [mysql_reverse_sql.py](./04-db-check/mysql_reverse_sql.py)
+- [05-db-install](./05-db-install) | 数据库安装
+  - [mssql_offline_install.sh](./05-db-install/mssql_offline_install.sh)
+  - [mysql_generic_install.sh](./05-db-install/mysql_generic_install.sh)
+  - [oracle_shell_install.sh](./05-db-install/oracle_shell_install.sh)
+  - [pg_souece_install.sh](./05-db-install/pg_souece_install.sh)
