@@ -7,6 +7,7 @@ dba-gadgets
 - [01-backup-and-archive](./01-backup-and-archive) | 备份和归档
   - [mongo_backup_mongodump.sh](./01-backup-and-archive/mongo_backup_mongodump.sh)
   - [mysql_backup_mysqldump.sh](./01-backup-and-archive/mysql_backup_mysqldump.sh)
+  - [mysql_restore_mysqldump.sh](./01-backup-and-archive/mysql_restore_mysqldump.sh)
   - [mysql_restore_xtrabackup.py](./01-backup-and-archive/mysql_restore_xtrabackup.py)
 - [02-data-processing](./02-data-processing) | 数据处理
   - [oracle_clear_tabhwm](./02-data-processing/oracle_clear_tabhwm)

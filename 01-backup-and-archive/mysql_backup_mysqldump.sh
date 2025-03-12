@@ -8,30 +8,39 @@ LOGFILE="${BASEDIR}/backup_mysql.log"
 # mysqldump 和 mysql 命令路径
 MYSQLDUMP="/usr/bin/mysqldump"
 MYSQL="/usr/bin/mysql"
+PT_SHOW_GRANTS="/usr/bin/pt-show-grants"
+# 保留备份的天数
+RETENTION_DAYS=6
+
+# 主机和备份配置信息（IP:端口, 用户名, 密码）
+declare -A MYSQL_CONFIGS=(
+    ["127.0.0.1:3306"]="backup_user aaa123456"
+    ["devmysql.fixpng.top:3306"]="backup aaa123456b"
+)
 
 # 日志函数
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOGFILE"
 }
 
-# 主机和备份配置信息（IP, 端口, 用户名, 密码）
-declare -A MYSQL_CONFIGS=(
-    ["127.0.0.1"]="3306 backup_user:aaa123456"
-    ["devmysql.fixpng.top"]="3306 backup:aaa123456b"
-)
-
 # 创建备份目录并执行备份
-for HOST in "${!MYSQL_CONFIGS[@]}"; do
-    IFS=' ' read -r PORT CREDENTIAL <<< "${MYSQL_CONFIGS[$HOST]}"
-    USERPASS=(${CREDENTIAL//:/ })
+for HOST_PORT in "${!MYSQL_CONFIGS[@]}"; do
+    IFS=':' read -r HOST PORT <<< "$HOST_PORT"
+    CREDENTIAL="${MYSQL_CONFIGS[$HOST_PORT]}"
+    USERPASS=(${CREDENTIAL})
     USER=${USERPASS[0]}
     PASS=${USERPASS[1]}
 
-    BACKUP_DIR="${BASEDIR}/${HOST}/${BKDATE}"
+    BACKUP_DIR="${BASEDIR}/${HOST_PORT}/${BKDATE}"
     mkdir -pv "$BACKUP_DIR"
 
     # 获取数据库列表
     DBS=$($MYSQL --host="$HOST" --port="$PORT" -u"$USER" -p"$PASS" -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|performance_schema|sys)")
+
+    # 备份用户权限
+    GRANTS_FILE="${BACKUP_DIR}/grants.sql"
+    log "Backing up grants for ${HOST}:${PORT} to ${GRANTS_FILE}"
+    $PT_SHOW_GRANTS --host="$HOST" --port="$PORT" --user="$USER" --password="$PASS" > "${GRANTS_FILE}"
 
     for DB in $DBS; do
         BACKUP_FILE="${BACKUP_DIR}/${DB}.sql.gz"
@@ -40,6 +49,6 @@ for HOST in "${!MYSQL_CONFIGS[@]}"; do
     done
 done
 
-# 删除超过6天的备份
-log "Removing backups older than 6 days"
-find "$BASEDIR"/* -type d -mtime +6 -exec rm -rf {} \;
+# 删除超过指定天数的备份
+log "Removing backups older than ${RETENTION_DAYS} days"
+find "$BASEDIR"/* -type d -mtime +${RETENTION_DAYS} -exec rm -rf {} \;
