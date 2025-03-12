@@ -15,7 +15,7 @@ files_tree 生成当前目录的树状结构及markdown格式链接。
 
 # 定义文件/目录与描述的映射
 description_map = {
-    "01-backup-and-archive": "备份和归档",
+    "01-backup-restore-archive": "备份、恢复、归档",
     "02-data-processing": "数据处理",
     "03-files-processing": "文件处理",
     "04-db-check": "数据库检查",
