@@ -9,6 +9,8 @@ dba-gadgets
   - [mysql_backup_mysqldump.sh](./01-backup-restore-archive/mysql_backup_mysqldump.sh)
   - [mysql_restore_mysqldump.sh](./01-backup-restore-archive/mysql_restore_mysqldump.sh)
   - [mysql_restore_xtrabackup.py](./01-backup-restore-archive/mysql_restore_xtrabackup.py)
+  - [sr_backup_snapshot.py](./01-backup-restore-archive/sr_backup_snapshot.py)
+  - [sr_restore_snapshot.py](./01-backup-restore-archive/sr_restore_snapshot.py)
 - [02-data-processing](./02-data-processing) | 数据处理
   - [oracle_clear_tabhwm](./02-data-processing/oracle_clear_tabhwm)
     - [oracle_f_get_part.sql](./02-data-processing/oracle_clear_tabhwm/oracle_f_get_part.sql)
@@ -26,12 +28,13 @@ dba-gadgets
   - [redis_del_idle_key.py](./02-data-processing/redis_del_idle_key.py)
 - [03-files-processing](./03-files-processing) | 文件处理
   - [delete_files.sh](./03-files-processing/delete_files.sh)
+  - [files_rsync_migration.sh](./03-files-processing/files_rsync_migration.sh)
   - [files_tree.py](./03-files-processing/files_tree.py)
   - [generate_test_files.sh](./03-files-processing/generate_test_files.sh)
   - [hw_rds_download_audit_logs.py](./03-files-processing/hw_rds_download_audit_logs.py)
-  - [mysql_to_excel](./03-files-processing/mysql_to_excel)
-    - [mysql_to_excel.py](./03-files-processing/mysql_to_excel/mysql_to_excel.py)
-    - [sql.xlsx](./03-files-processing/mysql_to_excel/sql.xlsx)
+  - [sql_to_excel](./03-files-processing/sql_to_excel)
+    - [sql.xlsx](./03-files-processing/sql_to_excel/sql.xlsx)
+    - [sql_to_excel.py](./03-files-processing/sql_to_excel/sql_to_excel.py)
 - [04-db-check](./04-db-check) | 数据库检查
   - [app_batch_management.sh](./04-db-check/app_batch_management.sh)
   - [mysql_f_rollback_time_calc.sql](./04-db-check/mysql_f_rollback_time_calc.sql)
