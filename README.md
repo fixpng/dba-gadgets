@@ -26,6 +26,8 @@ dba-gadgets
     - [oracle_tb_tab_tool.sql](./02-data-processing/oracle_table_tool/oracle_tb_tab_tool.sql)
   - [redis_del_big_list.py](./02-data-processing/redis_del_big_list.py)
   - [redis_del_idle_key.py](./02-data-processing/redis_del_idle_key.py)
+  - [sr_alter_table_rn.py](./02-data-processing/sr_alter_table_rn.py)
+  - [sr_alter_view_rn.py](./02-data-processing/sr_alter_view_rn.py)
 - [03-files-processing](./03-files-processing) | 文件处理
   - [delete_files.sh](./03-files-processing/delete_files.sh)
   - [files_rsync_migration.sh](./03-files-processing/files_rsync_migration.sh)
@@ -41,6 +43,7 @@ dba-gadgets
   - [mysql_f_rollback_time_calc.sql](./04-db-check/mysql_f_rollback_time_calc.sql)
   - [mysql_pt_slave_repair.py](./04-db-check/mysql_pt_slave_repair.py)
   - [mysql_reverse_sql.py](./04-db-check/mysql_reverse_sql.py)
+  - [sr_zabbix_check.py](./04-db-check/sr_zabbix_check.py)
 - [05-db-install](./05-db-install) | 数据库安装
   - [mssql_offline_install.sh](./05-db-install/mssql_offline_install.sh)
   - [mysql_generic_install.sh](./05-db-install/mysql_generic_install.sh)
