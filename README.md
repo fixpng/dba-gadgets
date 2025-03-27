@@ -37,6 +37,7 @@ dba-gadgets
     - [sql_to_excel.py](./03-files-processing/sql_to_excel/sql_to_excel.py)
 - [04-db-check](./04-db-check) | 数据库检查
   - [app_batch_management.sh](./04-db-check/app_batch_management.sh)
+  - [hardware_info.sh](./04-db-check/hardware_info.sh)
   - [mysql_f_rollback_time_calc.sql](./04-db-check/mysql_f_rollback_time_calc.sql)
   - [mysql_pt_slave_repair.py](./04-db-check/mysql_pt_slave_repair.py)
   - [mysql_reverse_sql.py](./04-db-check/mysql_reverse_sql.py)
