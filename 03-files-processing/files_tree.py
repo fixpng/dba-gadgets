@@ -27,7 +27,7 @@ def tree(directory, padding, only_dirs=False, only_files=False, markdown=False):
     items.sort()
     
     # 过滤掉指定的文件和目录，并添加描述
-    items = [item for item in items if item not in ['.git', 'README.md', 'aaa.md', 'LICENSE']]
+    items = [item for item in items if item not in ['.git', 'README.md', 'LICENSE', 'conf', '.env']]
     
     for index, item in enumerate(items):
         path = os.path.join(directory, item)

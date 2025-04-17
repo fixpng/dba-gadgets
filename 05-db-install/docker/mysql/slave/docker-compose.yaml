@@ -1,0 +1,16 @@
+version: "3"
+services:
+  slave_mysql:
+    image: mysql:${MYSQL_VERSION}
+    container_name: mysql-slave
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      TZ: "Asia/Shanghai"
+    ports:
+      - 3306:3306   # 同宿主机下注意端口避免与主节点冲突
+    volumes:
+      - "./conf/my.cnf:/etc/mysql/my.cnf"
+      - "./dbdata:/var/lib/mysql"
+      - "./run_mysqld:/var/run/mysqld"
+    restart: "always"
+    command: ["--lower-case-table-names=1"]

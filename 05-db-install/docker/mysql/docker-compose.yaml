@@ -1,0 +1,16 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      TZ: "Asia/Shanghai"
+    ports:
+      - 3306:3306
+    volumes:
+      - "./conf/my.cnf:/etc/mysql/my.cnf"
+      - "./dbdata:/var/lib/mysql"
+      - "./run_mysqld:/var/run/mysqld"
+    restart: "always"
+    command: ["--lower-case-table-names=1"]

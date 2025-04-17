@@ -6,6 +6,7 @@
 dba-gadgets
 - [01-backup-restore-archive](./01-backup-restore-archive) | 备份、恢复、归档
   - [mongo_backup_mongodump.sh](./01-backup-restore-archive/mongo_backup_mongodump.sh)
+  - [mongo_restore_mongodump.sh](./01-backup-restore-archive/mongo_restore_mongodump.sh)
   - [mysql_backup_mysqldump.sh](./01-backup-restore-archive/mysql_backup_mysqldump.sh)
   - [mysql_restore_mysqldump.sh](./01-backup-restore-archive/mysql_restore_mysqldump.sh)
   - [mysql_restore_xtrabackup.py](./01-backup-restore-archive/mysql_restore_xtrabackup.py)
@@ -45,6 +46,14 @@ dba-gadgets
   - [mysql_reverse_sql.py](./04-db-check/mysql_reverse_sql.py)
   - [sr_zabbix_check.py](./04-db-check/sr_zabbix_check.py)
 - [05-db-install](./05-db-install) | 数据库安装
+  - [docker](./05-db-install/docker)
+    - [mongodb](./05-db-install/docker/mongodb)
+      - [docker-compose.yaml](./05-db-install/docker/mongodb/docker-compose.yaml)
+    - [mysql](./05-db-install/docker/mysql)
+      - [docker-compose.yaml](./05-db-install/docker/mysql/docker-compose.yaml)
+      - [slave](./05-db-install/docker/mysql/slave)
+        - [docker-compose.yaml](./05-db-install/docker/mysql/slave/docker-compose.yaml)
+        - [setup_replication.sh](./05-db-install/docker/mysql/slave/setup_replication.sh)
   - [mssql_offline_install.sh](./05-db-install/mssql_offline_install.sh)
   - [mysql_generic_install.sh](./05-db-install/mysql_generic_install.sh)
   - [oracle_shell_install.sh](./05-db-install/oracle_shell_install.sh)
