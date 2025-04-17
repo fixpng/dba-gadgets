@@ -6,9 +6,9 @@ BASEDIR="/datacfs/mysqlbak"
 BKDATE=$(date "+%Y%m%d")
 LOGFILE="${BASEDIR}/backup_mysql.log"
 # mysqldump 和 mysql 命令路径
-MYSQLDUMP="/usr/bin/mysqldump"
-MYSQL="/usr/bin/mysql"
-PT_SHOW_GRANTS="/usr/bin/pt-show-grants"
+MYSQLDUMP="mysqldump"
+MYSQL="mysql"
+PT_SHOW_GRANTS="pt-show-grants"
 # 保留备份的天数
 RETENTION_DAYS=6
 

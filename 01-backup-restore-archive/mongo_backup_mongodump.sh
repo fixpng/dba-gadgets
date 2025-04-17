@@ -1,12 +1,15 @@
 #!/bin/bash
 # mongodump多实例批量备份脚本（包含用户和权限）
+# 下载对应版本工具
+# https://www.mongodb.com/try/download/database-tools
 
 # 定义基本目录和日期变量
 BASEDIR="/datacfs/mongobak"
 BKDATE=$(date "+%Y%m%d")
 LOGFILE="${BASEDIR}/backup_mongo.log"
-MONGODUMP="/usr/local/mongodb/bin/mongodump"
-MONGOEXPORT="/usr/local/mongodb/bin/mongoexport"
+MONGODUMP="mongodump"
+MONGOEXPORT="mongoexport"
+MONGOSH="mongosh"
 RETENTION_DAYS=6
 
 # 主机和备份配置信息（IP:端口, 用户名, 密码, 认证数据库）
@@ -33,7 +36,7 @@ for HOST_PORT in "${!MONGO_CONFIGS[@]}"; do
     mkdir -pv "$BACKUP_DIR"
 
     # 获取数据库列表
-    DBS=$($MONGODUMP --host "$HOST" --port "$PORT" --username "$USER" --password "$PASS" --authenticationDatabase "$AUTH_DB" --listDatabases | jq -r '.databases[].name' | grep -Ev "(admin|local|config)")
+    DBS=$($MONGOSH --host "$HOST" --port "$PORT" --username "$USER" --password "$PASS" --authenticationDatabase "$AUTH_DB" --quiet --eval "db.adminCommand('listDatabases').databases.map(db => db.name).join('\n')" | grep -Ev "(admin|local|config)")
 
     # 备份用户和权限
     log "Backing up users and roles for ${HOST}:${PORT} to ${BACKUP_DIR}/users.json"

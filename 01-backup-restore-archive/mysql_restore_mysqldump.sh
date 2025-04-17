@@ -3,7 +3,7 @@
 
 # 定义基本目录和日期变量
 # mysql 命令路径
-MYSQL="/usr/bin/mysql"
+MYSQL="mysql"
 LOGFILE="./restore_mysql.log"
 RESTORE_DIR="/datacfs/mysqlbak/127.0.0.1/20250101"
 
