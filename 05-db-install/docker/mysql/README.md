@@ -16,10 +16,9 @@ mysql --version
 
 ## 单实例
 ```powershell
-# 拉取 git 仓库
-cd /data/ && git clone https://git.bndxqc.cn/dba/mysql8.git
+mkdir -pv /data/mysql
 # 启动
-cd ./mysql8 && docker-compose up -d
+cd /data/mysql && docker-compose up -d
 # 进入 mysql 命令行
 docker exec -it mysql mysql -h127.0.0.1 -P3306 -uroot -p"root.COM2020"
 mysql  -h127.0.0.1  -uroot -P3306 -p"root.COM2020"
@@ -29,10 +28,9 @@ mysql  -h127.0.0.1  -uroot -P3306 -p"root.COM2020"
 主库启动步骤与单实例相同，从库启动及配置如下
 > setup_replication.sh 脚本只适用于：主库也是初始搭建，空库、没有数据的状态
 ```powershell
-# 拉取 git 仓库
-cd /data/ && git clone https://git.bndxqc.cn/dba/mysql8.git
+mkdir -pv /data/mysql
 # 拷贝 slave 的配置及 docker-compose 并启动
-cd ./mysql8 &&  yes | cp -Rf ./slave/* ./  && docker-compose up -d
+cd /data/mysql &&  yes | cp -Rf ./slave/* ./  && docker-compose up -d
 # 设置主从(192.168.1.100 为主库ip)
 sh ./setup_replication.sh 192.168.1.100 3306 root "root.COM2020"
 # 进入从库 mysql 命令行
