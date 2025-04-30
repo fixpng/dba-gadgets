@@ -32,6 +32,7 @@ dba-gadgets
   - [sr_alter_view_rn.py](./02-data-processing/sr_alter_view_rn.py)
 - [03-files-processing](./03-files-processing) | 文件处理
   - [delete_files.sh](./03-files-processing/delete_files.sh)
+  - [files_backup.sh](./03-files-processing/files_backup.sh)
   - [files_rsync_migration.sh](./03-files-processing/files_rsync_migration.sh)
   - [files_tree.py](./03-files-processing/files_tree.py)
   - [generate_test_files.sh](./03-files-processing/generate_test_files.sh)
