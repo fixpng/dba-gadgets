@@ -7,6 +7,7 @@ import socket
 import re
 import pymysql
 import time
+import base64
 
 """
 docker-compose 快速恢复 xtrabackup 物理备份的 mysql 数据库
@@ -15,24 +16,22 @@ docker-compose 快速恢复 xtrabackup 物理备份的 mysql 数据库
 3. 恢复的端口号不会冲突，会判断是否存在，如果存在会自动增加，例如恢复了一个文件名为 prod-20240107172119408 的端口号为6033 ，继续恢复文件名为 prod-20240208172119408 的端口号就会为6034。
 4. 恢复成功后，会修改root密码，密码在脚本开头定义。
 """
-# 执行脚本后面接两个参数，第一个参数是版本号 如：8.0、5.7、5.6；第二个参数是备份文件的路径
-if len(sys.argv) != 3:
-    print("Usage: python3 restore_mysql_xtrabackup.py <mysql_version> <backup_file>")
-    print('eg: python3 restore_mysql_xtrabackup.py "8.0" "/dbbackup/mysql/prod_aigc/prod-aigc-20240101172119408"')
-    sys.exit(1)
 
-mysql_version = sys.argv[1]
-backup_file = sys.argv[2]
+MYSQL_VERSION = None
+BACKUP_FILE = None
 
+# 检查目录是否挂载
+CHECK_DIR = r"/dbbackup"
 # 定义恢复目录
-RESTORE_DIR_ROOT = r"/dbbackup/restore"
+RESTORE_DIR_ROOT = r"/dbbackup/restore/restore_db"
 # 所在服务器IP
 host = "127.0.0.1"
 # MySQL 用户
 user = "root"
+# 旧密码
+old_password = base64.b64decode("dGVzdHBhc3N3b3Jk").decode("utf-8")
 # 恢复完毕，修改后的密码，最后可以用这个密码登录
-old_password = "aaa123456*"
-new_password = "bbb123456*"
+new_password = "root.COM2025"
 
 # 如果恢复的是MySQL 8.0 版本，需要用-xtrabackup-8.0版本
 xbstream_cmd_8_0 = f"/usr/local/percona-xtrabackup-8.0.34-29-Linux-x86_64.glibc2.17/bin/xbstream"
@@ -102,10 +101,10 @@ prompt="\\u@\\h [\\d]>"
 [mysqld]
 default_authentication_plugin=mysql_native_password
 port=3306 
-datadir=/data/dbdata6033
-log-error=/data/dbdata6033/mysql-error.log
-socket=/data/run_mysqld/mysql.sock  
-max_allowed_packet= 2G  
+datadir=/var/lib/mysql
+log-error=/var/lib/mysql/mysql-error.log
+socket=/var/run/mysqld/mysql.sock  
+#max_allowed_packet= 2G  
 skip-name-resolve=1 
 character_set_server=utf8mb4
 collation_server=utf8mb4_general_ci
@@ -128,7 +127,7 @@ innodb_flush_log_at_trx_commit = 1
 innodb_log_buffer_size = 32M
 innodb_log_file_size = 2G
 innodb_log_files_in_group = 3
-innodb_max_undo_log_size = 2G
+#innodb_max_undo_log_size = 2G
 
 #binlog  
 server-id=10086
@@ -136,18 +135,18 @@ log-bin = mysql
 binlog_format=row
 
 #gtid 
-#gtid_mode=on
-#enforce_gtid_consistency=on  
-#log-slave-updates=1  
+gtid_mode=on
+enforce_gtid_consistency=on  
+log-slave-updates=1  
 #log_replica_updates=1
 """
 
-docker_compose_yml = f"""version: '2.1'
+docker_compose_yml = """version: '2.1'
 services:
     mysql:
         environment:
             TZ: "Asia/Shanghai"
-            MYSQL_ROOT_PASSWORD: "{new_password}" 
+            MYSQL_ROOT_PASSWORD: "root.COM2020" 
         user: "1001:1001"
         image: mysql:8.0.28
         container_name: "ps6033"
@@ -157,7 +156,7 @@ services:
         volumes:  
             - "/dbbackup/data/dbdata:/var/lib/mysql"
             - "/dbbackup/data/run_mysqld:/var/run/mysqld"            
-            - "/dbbackup/data/cnf:/etc/my.cnf.d"  
+            - "/dbbackup/data/cnf/my.cnf:/etc/my.cnf"  
         ports:  
             - "6033:3306"
         command: ["--lower-case-table-names=1"]            
@@ -184,7 +183,7 @@ def set_cnf_value(cnf_file,key, value):
     else:
         print(f"错误：键 {key} 不存在于配置文件中")
 
-def check_mysql_version():
+def check_mysql_version(mysql_version):
     """
     判断MySQL的版本
     """
@@ -194,6 +193,17 @@ def check_mysql_version():
         return "5.7"
     if "8.0" in mysql_version:
         return "8.0"
+    
+def docker_image_mysql_version(mysql_version):
+    """
+    判断MySQL的版本
+    """
+    if "5.6" in mysql_version:
+        return "5.6.51"
+    if "5.7" in mysql_version:
+        return "5.7.43"
+    if "8.0" in mysql_version:
+        return "8.0.25"
 
 def extract_mysql_instance_name(path):
     """
@@ -204,11 +214,11 @@ def extract_mysql_instance_name(path):
     cleaned_instance_name = re.sub(r'[-]', '_', instance_name)
     return cleaned_instance_name
 
-def unzip_mysqlbak_file(bak_file,unzip_dir,log_file):
+def unzip_mysqlbak_file(bak_file,unzip_dir,log_file,version):
     """
     解压备份文件
     """
-    mysql_version = check_mysql_version()
+    mysql_version = check_mysql_version(version)
     if mysql_version == '5.6':
         xbstream_cmd = f"%s  -x --parallel=4 <  %s -C %s" %(xbstream_cmd_2_4,bak_file,unzip_dir)
         xtrabackup_cmd = f"%s --parallel=4 --decompress  %s" %(xtrabackup_cmd_2_4,unzip_dir)
@@ -234,11 +244,11 @@ def del_qp_file(path):
             if file.endswith(".qp"):
                 os.remove(os.path.join(root, file))
 
-def prepare_mysqlbak_file(unzip_dir,log_file):
+def prepare_mysqlbak_file(unzip_dir,log_file,version):
     """
     prepare恢复备份文件
     """
-    mysql_version = check_mysql_version()
+    mysql_version = check_mysql_version(version)
     if mysql_version == '5.6':
         xtrabackup_cmd = f"%s --apply-log  %s" %(xtrabackup_cmd_2_4,unzip_dir)
     elif mysql_version == '5.7':
@@ -250,11 +260,11 @@ def prepare_mysqlbak_file(unzip_dir,log_file):
     logging_file(log_file,xtrabackup_cmd)
     execute_command(xtrabackup_cmd)
 
-def restore_mysqlbak_file(cnf_file,unzip_dir,log_file):
+def restore_mysqlbak_file(cnf_file,unzip_dir,log_file,version):
     """
     copy-back恢复备份文件
     """
-    mysql_version = check_mysql_version()
+    mysql_version = check_mysql_version(version)
     if mysql_version == '5.6':
         xtrabackup_cmd = f"%s --defaults-file=%s --copy-back  %s" %(xtrabackup_cmd_2_4,cnf_file,unzip_dir)
     elif mysql_version == '5.7':
@@ -332,13 +342,12 @@ def get_next_container_name():
     except subprocess.CalledProcessError:
         return "Error occurred while trying to fetch container names"
 
-def change_mysql_root_password(port):
+def change_mysql_root_password(port,mysql_version):
     """
-    修改MySQL 用户密码 原root密码
+    修改MySQL 用户密码
     """
-    # old_password = base64.b64decode("aaaaaaaaa").decode("utf8")
-    max_retries = 3
-    retry_interval = 10
+    max_retries = 6
+    retry_interval = 30
     print("正在执行命令>>>  正在修改 MySQL root 用户密码")
     def connect_mysql_with_retry():
         for _ in range(max_retries):
@@ -346,9 +355,9 @@ def change_mysql_root_password(port):
                 connection = pymysql.connect(host=host, user=user, port=int(port), password=old_password, database='mysql')
                 return connection
             except pymysql.MySQLError as e:
-                print(f"Failed to connect to MySQL. Retrying in {retry_interval} seconds. Error info: {e}")
+                print(f"Failed to connect to MySQL. Retrying in {retry_interval} seconds.")
                 time.sleep(retry_interval)
-        raise ConnectionError(f"Unable to connect to MySQL after multiple retries. {max_retries} * {retry_interval}s")
+        raise ConnectionError("Unable to connect to MySQL after multiple retries.")
 
     connection = connect_mysql_with_retry()
     cursor = connection.cursor()
@@ -364,11 +373,14 @@ def change_mysql_root_password(port):
     login_cmd = f'''mysql -h{host} -P{port} -u{user} -p"{new_password}"'''
     print("登录命令>>> ",login_cmd)
 
-def main():
+def restore_mysql(_mysql_version=MYSQL_VERSION,_backup_file=BACKUP_FILE):
+    # Start time for duration calculation
+    start_time = time.time()
+
     # 检查需要恢复的目录是否挂载上，如果没挂载上，直接退出
-    check_filesystem(RESTORE_DIR_ROOT)
+    check_filesystem(CHECK_DIR)
     # 定义目录
-    instance_name = extract_mysql_instance_name(backup_file)
+    instance_name = extract_mysql_instance_name(_backup_file)
     RESTORE_DIR_BASE = f"%s/%s" % (RESTORE_DIR_ROOT,instance_name)
     # 目录：数据文件目录
     RESTORE_DIR_DB = f"%s/dbdata" % (RESTORE_DIR_BASE)
@@ -391,15 +403,12 @@ def main():
     write_to_file(RESTORE_DIR_CNF, "my.cnf", cnf_content)
     # 创建配置文件 docker-compose.yml
     write_to_file(RESTORE_DIR_BASE, "docker-compose.yml", docker_compose_yml)
-    # 修改配置文件 my.cnf
-    update_file_content(RESTORE_DIR_CNF, "my.cnf","/data/dbdata6033",RESTORE_DIR_DB)
-    update_file_content(RESTORE_DIR_CNF, "my.cnf", "/data/run_mysqld", run_mysqld_tmp_dir)
     # 解压全备文件
-    unzip_mysqlbak_file(backup_file,RESTORE_DIR_DB,log_file)
+    unzip_mysqlbak_file(_backup_file,RESTORE_DIR_DB,log_file,_mysql_version)
     # 删除qp文件
     del_qp_file(RESTORE_DIR_DB)
     # 准备备份文件,恢复数据到自建库
-    prepare_mysqlbak_file(RESTORE_DIR_DB,log_file)
+    prepare_mysqlbak_file(RESTORE_DIR_DB,log_file,_mysql_version)
     # 修改目录权限
     update_chown(RESTORE_DIR_DB)
     update_chown(cnf_file)
@@ -408,11 +417,13 @@ def main():
     update_innodb_data_file_path(RESTORE_DIR_DB,cnf_file)
     # 获取端口号
     new_port = check_port_existence(6033)
+    # 获取MySQL版本号对应镜像
+    docker_image = docker_image_mysql_version(_mysql_version)
     # 修改 docker-compose.yml 文件
     update_file_content(RESTORE_DIR_BASE, docker_compose_file,"/dbbackup/data/dbdata", RESTORE_DIR_DB)
     update_file_content(RESTORE_DIR_BASE, docker_compose_file,"/dbbackup/data/run_mysqld",run_mysqld_tmp_dir)
     update_file_content(RESTORE_DIR_BASE, docker_compose_file,"/dbbackup/data/cnf",RESTORE_DIR_CNF)
-    update_file_content(RESTORE_DIR_BASE, docker_compose_file,"8.0.28",mysql_version)
+    update_file_content(RESTORE_DIR_BASE, docker_compose_file,"8.0.28",docker_image)
     update_file_content(RESTORE_DIR_BASE, docker_compose_file,"6033",new_port)
     # 获取docker容器名
     container_name = get_next_container_name()
@@ -424,7 +435,28 @@ def main():
     # 启动docker
     execute_command(docker_compose_up)
     # 修改 MySQL root 用户密码
-    change_mysql_root_password(new_port)
+    change_mysql_root_password(new_port,_mysql_version)
 
-main()
+    # End time for duration calculation
+    end_time = time.time()
+    duration_seconds = int(end_time - start_time)
+
+    return RESTORE_DIR_BASE, duration_seconds, host, new_port, user, new_password 
+
+if __name__ == "__main__":
+    # 执行脚本后面接两个参数，第一个参数是版本号，必须要精确到小版本号；第二个参数是备份文件的路径
+    if len(sys.argv) != 3:
+        print("Usage: python3 restore_mysql.py <mysql_version> <backup_file>")
+        print('eg: python3 restore_mysql.py "8.0.28" "/hwdbbackup/mysql/prod_aigc/mysql-rds-prod-aigc-20240107172119408"')
+        sys.exit(1)
+
+    MYSQL_VERSION = sys.argv[1]
+    BACKUP_FILE = sys.argv[2]
+
+    # Call the restore_mysql function with the provided arguments
+    restore_dir, port, duration_seconds = restore_mysql(_mysql_version=MYSQL_VERSION, _backup_file=BACKUP_FILE)
+
+    print(f"Restore completed in {duration_seconds} seconds.")
+    print(f"Restore directory: {restore_dir}")
+    print(f"MySQL is running on port: {port}")
 
