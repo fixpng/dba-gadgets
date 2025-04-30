@@ -1,0 +1,56 @@
+version: "3"
+services:
+  minio:
+    container_name: minio
+    image: quay.io/minio/minio
+    environment:
+      MINIO_ROOT_USER: miniouser
+      MINIO_ROOT_PASSWORD: miniopassword
+    volumes:
+      - ./data:/minio_data
+    ports:
+      - "9001:9001"
+      - "9000:9000"
+    entrypoint: sh
+    command: '-c ''mkdir -p /minio_data/test && minio server /minio_data --console-address ":9001"'''
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+    restart: always
+    networks:
+      network:
+        ipv4_address: 10.5.0.6
+
+  minio_mc:
+    container_name: minio_mc
+    image: quay.io/minio/mc:latest
+    entrypoint:
+      - sh
+      - -c
+      - |
+        until mc ls minio > /dev/null 2>&1; do
+          sleep 0.5
+        done
+        # 设置别名
+        mc alias set myminio http://minio:9000 miniouser miniopassword
+        # 创建服务账号
+        mc admin user svcacct add --access-key AAAAAAAAAAAAAAAAAAAA \
+        --secret-key BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB \
+        --expire="2099-12-01 12:00" \
+        myminio \
+        miniouser
+    depends_on:
+      - minio
+    networks:
+      network:
+        ipv4_address: 10.5.0.7
+
+networks:
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/16
+          gateway: 10.5.0.1

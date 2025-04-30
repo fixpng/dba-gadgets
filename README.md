@@ -1,5 +1,5 @@
 # 📚 dba-gadgets
-> 自己在DBA工作中编写与搜集的工具脚本整合整理，用法已在各脚本内注明。<br>
+> 自己在DBA工作中编写与搜集的通用工具脚本整合整理，用法已在各脚本内注明。<br>
 > Tools and scripts developed and collected by the DBA in their work, with usage instructions included in each script.<br>
 > mysql、oracle、mongo、redis、postgresql、starrocks...
 
@@ -49,6 +49,8 @@ dba-gadgets
   - [sr_zabbix_check.py](./04-db-check/sr_zabbix_check.py)
 - [05-db-install](./05-db-install) | 数据库安装
   - [docker](./05-db-install/docker)
+    - [minio](./05-db-install/docker/minio)
+      - [docker-compose.yaml](./05-db-install/docker/minio/docker-compose.yaml)
     - [mongodb](./05-db-install/docker/mongodb)
       - [docker-compose.yaml](./05-db-install/docker/mongodb/docker-compose.yaml)
     - [mysql](./05-db-install/docker/mysql)
