@@ -1,7 +1,10 @@
 # 📚 dba-gadgets
-> 自己在DBA工作中编写与搜集的通用工具脚本整合整理，用法已在各脚本内注明。<br>
-> Tools and scripts developed and collected by the DBA in their work, with usage instructions included in each script.<br>
-> mysql、oracle、mongo、redis、postgresql、starrocks...
+- 自己在DBA工作中编写与搜集的通用工具脚本整合整理，用法已在各脚本内注明。
+- Tools and scripts developed and collected by the DBA in their work, with usage instructions included in each script.
+- mysql、oracle、mongo、redis、postgresql、starrocks...
+
+
+> 以下目录树，使用脚本 `.\03-files-processing\files_tree.py --markdown` 生成
 
 dba-gadgets
 - [01-backup-restore-archive](./01-backup-restore-archive) | 备份、恢复、归档
@@ -42,6 +45,7 @@ dba-gadgets
     - [sql_to_excel.py](./03-files-processing/sql_to_excel/sql_to_excel.py)
 - [04-db-check](./04-db-check) | 数据库检查
   - [app_batch_management.sh](./04-db-check/app_batch_management.sh)
+  - [disk_performance_test.sh](./04-db-check/disk_performance_test.sh)
   - [hardware_info.sh](./04-db-check/hardware_info.sh)
   - [mysql_f_rollback_time_calc.sql](./04-db-check/mysql_f_rollback_time_calc.sql)
   - [mysql_pt_slave_repair.py](./04-db-check/mysql_pt_slave_repair.py)
