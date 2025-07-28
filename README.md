@@ -29,6 +29,7 @@ dba-gadgets
     - [oracle_f_str_split.sql](./02-data-processing/oracle_table_tool/oracle_f_str_split.sql)
     - [oracle_pkg_tab_tool.sql](./02-data-processing/oracle_table_tool/oracle_pkg_tab_tool.sql)
     - [oracle_tb_tab_tool.sql](./02-data-processing/oracle_table_tool/oracle_tb_tab_tool.sql)
+  - [oracle_tbs_autoext.sh](./02-data-processing/oracle_tbs_autoext.sh)
   - [redis_del_big_list.py](./02-data-processing/redis_del_big_list.py)
   - [redis_del_idle_key.py](./02-data-processing/redis_del_idle_key.py)
   - [sr_alter_table_rn.py](./02-data-processing/sr_alter_table_rn.py)
@@ -66,3 +67,4 @@ dba-gadgets
   - [mysql_generic_install.sh](./05-db-install/mysql_generic_install.sh)
   - [oracle_shell_install.sh](./05-db-install/oracle_shell_install.sh)
   - [pg_souece_install.sh](./05-db-install/pg_souece_install.sh)
+  - [ssh_trust.sh](./05-db-install/ssh_trust.sh)
