@@ -17,6 +17,11 @@ dba-gadgets
   - [sr_restore_snapshot.py](./01-backup-restore-archive/sr_restore_snapshot.py)
 - [02-data-processing](./02-data-processing) | 数据处理
   - [mysql_csv_to_table.py](./02-data-processing/mysql_csv_to_table.py)
+  - [open_metadata_lineage](./02-data-processing/open_metadata_lineage)
+    - [execute_demo.py](./02-data-processing/open_metadata_lineage/execute_demo.py)
+    - [get_etl_add_lineage.py](./02-data-processing/open_metadata_lineage/get_etl_add_lineage.py)
+    - [open_metadata_db_info.py](./02-data-processing/open_metadata_lineage/open_metadata_db_info.py)
+    - [open_metadata_lineage.py](./02-data-processing/open_metadata_lineage/open_metadata_lineage.py)
   - [oracle_clear_tabhwm](./02-data-processing/oracle_clear_tabhwm)
     - [oracle_f_get_part.sql](./02-data-processing/oracle_clear_tabhwm/oracle_f_get_part.sql)
     - [oracle_proc_clear_tabhwm.sql](./02-data-processing/oracle_clear_tabhwm/oracle_proc_clear_tabhwm.sql)
