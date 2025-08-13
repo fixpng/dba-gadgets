@@ -20,6 +20,7 @@ description_map = {
     "03-files-processing": "文件处理",
     "04-db-check": "数据库检查",
     "05-db-install": "数据库安装",
+    "06-auxiliary-tools": "辅助工具",
 }
 
 def tree(directory, padding, only_dirs=False, only_files=False, markdown=False):

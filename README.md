@@ -73,3 +73,5 @@ dba-gadgets
   - [oracle_shell_install.sh](./05-db-install/oracle_shell_install.sh)
   - [pg_souece_install.sh](./05-db-install/pg_souece_install.sh)
   - [ssh_trust.sh](./05-db-install/ssh_trust.sh)
+- [06-auxiliary-tools](./06-auxiliary-tools) | 辅助工具
+  - [MobaXterm-Keygen.py](./06-auxiliary-tools/MobaXterm-Keygen.py)
