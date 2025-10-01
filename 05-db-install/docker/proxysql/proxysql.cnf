@@ -1,0 +1,56 @@
+# 数据存储目录（与 docker-compose 挂载的 volumes 对应）
+datadir="/var/lib/proxysql"
+
+# 1. 管理接口配置（ProxySQL 自身管理）
+admin_variables=
+{
+    admin_credentials="admin:admin"  # 默认管理账号密码（可后续修改）
+    mysql_ifaces="0.0.0.0:6032"      # 管理端口监听（宿主机 6032 映射）
+    refresh_interval=2000            # 配置刷新间隔（毫秒）
+    log_level="INFO"                 # 日志级别（DEBUG/INFO/WARNING/ERROR）
+    log_file="/var/lib/proxysql/logs/proxysql_admin.log"  # 管理日志路径
+}
+
+# 2. MySQL 代理核心配置（客户端与后端交互）
+mysql_variables=
+{
+    threads=4                       # 工作线程数（建议与 CPU 核心数匹配）
+    max_connections=2048            # 最大并发连接数
+    default_query_delay=0           # 默认查询延迟（0 表示无延迟）
+    default_query_timeout=36000000  # 查询超时时间（10 小时，单位毫秒）
+    have_compress=true              # 启用连接压缩（节省带宽）
+    interfaces="0.0.0.0:6033"       # 客户端连接端口（宿主机 6033 映射）
+    default_schema="testdb"         # 默认数据库（与应用访问的库一致）
+    log_queries_stats=true          # 启用查询统计日志
+    log_mysql_commands=true         # 启用 MySQL 命令日志
+    log_file="/var/lib/proxysql/logs/proxysql_mysql.log"  # MySQL 代理日志路径
+}
+
+# 3. 监控参数配置（官方标准写法，单位为秒）
+mysql-monitor_enabled=true                   # 启用监控
+mysql-monitor_username="monitor"             # 监控账号（与 MySQL 中创建的一致）
+mysql-monitor_password="monitor"             # 监控密码（与 MySQL 中创建的一致）
+mysql-monitor_connect_interval=60            # 连接检测间隔（秒，默认60）
+mysql-monitor_ping_interval=10               # Ping 检测间隔（秒，默认10）
+mysql-monitor_read_only_interval=15          # 只读状态检测间隔（秒，默认15）
+mysql-monitor_ping_timeout=1                 # Ping 超时时间（秒，默认1）
+mysql-monitor_replication_lag_interval=30    # 主从延迟检测间隔（秒，默认30）
+mysql-monitor_replication_lag_timeout=1      # 主从延迟超时时间（秒，默认1）
+
+# 4. 后端 MySQL 服务器初始配置（后续通过 SQL 完善）
+mysql_servers =
+(
+    # 格式示例：{address="IP", port=端口, hostgroup=组ID, weight=权重, max_connections=200}
+)
+
+# 5. 应用访问用户初始配置（后续通过 SQL 完善）
+mysql_users =
+(
+    # 格式示例：{username="账号", password="密码", default_hostgroup=组ID, active=1}
+)
+
+# 6. 查询路由规则初始配置（后续通过 SQL 完善）
+mysql_query_rules =
+(
+    # 格式示例：{rule_id=1, active=1, match_pattern="^SELECT", destination_hostgroup=1, apply=1}
+)

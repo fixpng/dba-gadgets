@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  proxysql:
+    image: proxysql/proxysql:3.0.2  # 固定版本，避免兼容性问题
+    container_name: proxysql        # 容器名，便于管理
+    restart: always                 # 异常退出后自动重启
+    ports:
+      - "6032:6032"    # 管理端口
+      - "6033:6033"    # 客户端连接端口
+      - "6080:6080"    # 监控端口
+    volumes:
+      - ./proxysql_data:/var/lib/proxysql  # 持久化配置与数据
+      - ./proxysql.cnf:/etc/proxysql.cnf   # 挂载自定义配置（覆盖默认）
+    environment:
+      - TZ=Asia/Shanghai  # 统一时区，避免日志时间错乱
+    healthcheck:          # 健康检查，确保服务正常
+      test: ["CMD", "mysqladmin", "ping", "-h127.0.0.1", "-P6032", "-uadmin", "-padmin"]
+      interval: 10s       # 检查间隔
+      timeout: 5s         # 超时时间
+      retries: 3          # 失败重试次数
+      start_period: 30s   # 启动后延迟检查（避免服务未就绪误判）
