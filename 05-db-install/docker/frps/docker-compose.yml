@@ -1,0 +1,16 @@
+services:
+    frps:
+        container_name: ${CONTAINER_NAME}
+        deploy:
+            resources:
+                limits:
+                    cpus: ${CPUS}
+                    memory: ${MEMORY_LIMIT}
+        image: snowdreamtech/frps:0.64.0
+        labels:
+            createdBy: Apps
+        network_mode: host
+        restart: on-failure:5
+        volumes:
+            - ./data/frps.toml:/etc/frp/frps.toml
+            - ./data/ssl:/etc/frp/ssl

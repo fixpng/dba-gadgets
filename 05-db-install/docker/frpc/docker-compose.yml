@@ -1,0 +1,16 @@
+services:
+    frpc:
+        container_name: ${CONTAINER_NAME}
+        deploy:
+            resources:
+                limits:
+                    cpus: ${CPUS}
+                    memory: ${MEMORY_LIMIT}
+        image: snowdreamtech/frpc:0.64.0
+        labels:
+            createdBy: Apps
+        network_mode: host
+        restart: on-failure:5
+        volumes:
+            - ./data/frpc.toml:/etc/frp/frpc.toml
+            - ./data/ssl:/etc/frp/ssl

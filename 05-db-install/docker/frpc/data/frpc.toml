@@ -1,0 +1,25 @@
+serverAddr = "127.0.0.1"  
+serverPort = 7000
+
+auth.method = "token"
+auth.token = "token123456"
+
+webServer.addr = "0.0.0.0"
+webServer.port = 7400
+webServer.user = "admin"
+webServer.password = "aaa123"
+webServer.pprofEnable = false
+
+# tls
+#transport.tls.certFile = "/etc/frp/ssl/client.crt"
+#transport.tls.keyFile = "/etc/frp/ssl/client.key"
+#transport.tls.trustedCaFile = "/etc/frp/ssl/ca.crt"
+
+# [[proxies]]
+# name = "blossom"
+# type = "tcp"
+# localOP = "127.0.0.1"
+# localPort = 9999
+# remotePort = 9998
+# transport.useEncryption = true
+# transport.useCompression = true
