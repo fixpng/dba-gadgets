@@ -21,6 +21,7 @@ description_map = {
     "04-db-check": "数据库检查",
     "05-db-install": "数据库安装",
     "06-auxiliary-tools": "辅助工具",
+    "07-sre-install": "运维安装",
 }
 
 def tree(directory, padding, only_dirs=False, only_files=False, markdown=False):
