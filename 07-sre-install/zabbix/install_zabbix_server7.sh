@@ -268,9 +268,9 @@ function main() {
         color "red" "请使用root用户执行此脚本" >&2
         exit 1
     fi
-    # 检查脚本名称是否为 install_zabbix_server7
-    if [[ "$(basename "$0")" != "install_zabbix_server7" ]]; then
-        color "red" "本脚本不允许修改脚本名称，请修改回：install_zabbix_server7，已退出!"
+    # 检查脚本名称是否为 install_zabbix_server7.sh
+    if [[ "$(basename "$0")" != "install_zabbix_server7.sh" ]]; then
+        color "red" "本脚本不允许修改脚本名称，请修改回：install_zabbix_server7.sh，已退出!"
         exit 1
     fi
     check_internet_connectivity
