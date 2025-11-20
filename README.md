@@ -4,7 +4,7 @@
 - mysql、oracle、mongo、redis、postgresql、starrocks...
 
 
-> 以下目录树，使用脚本 `.\03-files-processing\files_tree.py --markdown` 生成
+> 以下目录树，使用脚本 `python .\03-files-processing\files_tree.py --markdown` 生成
 
 dba-gadgets
 - [01-backup-restore-archive](./01-backup-restore-archive) | 备份、恢复、归档
@@ -16,6 +16,7 @@ dba-gadgets
   - [sr_backup_snapshot.py](./01-backup-restore-archive/sr_backup_snapshot.py)
   - [sr_restore_snapshot.py](./01-backup-restore-archive/sr_restore_snapshot.py)
 - [02-data-processing](./02-data-processing) | 数据处理
+  - [mysql_concurrency_test.py](./02-data-processing/mysql_concurrency_test.py)
   - [mysql_csv_to_table.py](./02-data-processing/mysql_csv_to_table.py)
   - [open_metadata_lineage](./02-data-processing/open_metadata_lineage)
     - [execute_demo.py](./02-data-processing/open_metadata_lineage/execute_demo.py)
@@ -74,12 +75,15 @@ dba-gadgets
   - [mysql_generic_install.sh](./05-db-install/mysql_generic_install.sh)
   - [oracle_shell_install.sh](./05-db-install/oracle_shell_install.sh)
   - [pg_souece_install.sh](./05-db-install/pg_souece_install.sh)
-  - [ssh_trust.sh](./05-db-install/ssh_trust.sh)
 - [06-auxiliary-tools](./06-auxiliary-tools) | 辅助工具
   - [MobaXterm-Keygen.py](./06-auxiliary-tools/MobaXterm-Keygen.py)
+  - [ssh_setup_keyless.sh](./06-auxiliary-tools/ssh_setup_keyless.sh)
+  - [ssh_trust.sh](./06-auxiliary-tools/ssh_trust.sh)
 - [07-sre-install](./07-sre-install) | 运维安装
   - [FTPServerAutoCreate.py](./07-sre-install/FTPServerAutoCreate.py)
   - [docker](./07-sre-install/docker)
+    - [SQLBot](./07-sre-install/docker/SQLBot)
+      - [docker-compose.yaml](./07-sre-install/docker/SQLBot/docker-compose.yaml)
     - [frpc](./07-sre-install/docker/frpc)
       - [data](./07-sre-install/docker/frpc/data)
         - [frpc.toml](./07-sre-install/docker/frpc/data/frpc.toml)
@@ -100,3 +104,7 @@ dba-gadgets
         - [init.sh](./07-sre-install/docker/frps/scripts/init.sh)
     - [minio](./07-sre-install/docker/minio)
       - [docker-compose.yaml](./07-sre-install/docker/minio/docker-compose.yaml)
+  - [zabbix](./07-sre-install/zabbix)
+    - [install_zabbix_server5.0.sh](./07-sre-install/zabbix/install_zabbix_server5.0.sh)
+    - [install_zabbix_server6.0.sh](./07-sre-install/zabbix/install_zabbix_server6.0.sh)
+    - [install_zabbix_server7.sh](./07-sre-install/zabbix/install_zabbix_server7.sh)
