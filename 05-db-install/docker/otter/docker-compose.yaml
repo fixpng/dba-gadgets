@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  otter-all:
+    #image: canal/otter-all
+    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/canal/otter-all:v4.2.18
+    container_name: otter-all
+    hostname: "127.0.0.1"
+    network_mode: host
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./zkData:/home/admin/zkData
+    deploy:
+      resources:
+        limits:
+          memory: 4096M
+    tty: true
+    stdin_open: true

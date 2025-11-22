@@ -58,6 +58,7 @@ dba-gadgets
   - [mysql_f_rollback_time_calc.sql](./04-db-check/mysql_f_rollback_time_calc.sql)
   - [mysql_pt_slave_repair.py](./04-db-check/mysql_pt_slave_repair.py)
   - [mysql_reverse_sql.py](./04-db-check/mysql_reverse_sql.py)
+  - [oracle_generating_focused_AWR_reports.sql](./04-db-check/oracle_generating_focused_AWR_reports.sql)
   - [sr_zabbix_check.py](./04-db-check/sr_zabbix_check.py)
 - [05-db-install](./05-db-install) | 数据库安装
   - [docker](./05-db-install/docker)
@@ -68,6 +69,8 @@ dba-gadgets
       - [slave](./05-db-install/docker/mysql/slave)
         - [docker-compose.yaml](./05-db-install/docker/mysql/slave/docker-compose.yaml)
         - [setup_replication.sh](./05-db-install/docker/mysql/slave/setup_replication.sh)
+    - [otter](./05-db-install/docker/otter)
+      - [docker-compose.yaml](./05-db-install/docker/otter/docker-compose.yaml)
     - [proxysql](./05-db-install/docker/proxysql)
       - [docker-compose.yaml](./05-db-install/docker/proxysql/docker-compose.yaml)
       - [proxysql.cnf](./05-db-install/docker/proxysql/proxysql.cnf)
