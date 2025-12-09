@@ -107,6 +107,7 @@ dba-gadgets
         - [init.sh](./07-sre-install/docker/frps/scripts/init.sh)
     - [minio](./07-sre-install/docker/minio)
       - [docker-compose.yaml](./07-sre-install/docker/minio/docker-compose.yaml)
+  - [openssh-update.sh](./07-sre-install/openssh-update.sh)
   - [zabbix](./07-sre-install/zabbix)
     - [install_zabbix_server5.0.sh](./07-sre-install/zabbix/install_zabbix_server5.0.sh)
     - [install_zabbix_server6.0.sh](./07-sre-install/zabbix/install_zabbix_server6.0.sh)
