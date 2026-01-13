@@ -58,6 +58,7 @@ dba-gadgets
   - [mysql_f_rollback_time_calc.sql](./04-db-check/mysql_f_rollback_time_calc.sql)
   - [mysql_pt_slave_repair.py](./04-db-check/mysql_pt_slave_repair.py)
   - [mysql_reverse_sql.py](./04-db-check/mysql_reverse_sql.py)
+  - [mysql_state_dump.sh](./04-db-check/mysql_state_dump.sh)
   - [oracle_generating_focused_AWR_reports.sql](./04-db-check/oracle_generating_focused_AWR_reports.sql)
   - [sr_zabbix_check.py](./04-db-check/sr_zabbix_check.py)
 - [05-db-install](./05-db-install) | 数据库安装
