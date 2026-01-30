@@ -1,0 +1,15 @@
+version: "3"
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:${MSSQL_VERSION}
+    container_name: mssql
+    user: "0:0"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+      MSSQL_PID: ${MSSQL_PID}
+    ports:
+      - 1433:1433
+    volumes:
+      - "./data:/var/opt/mssql"
+    restart: "always"
