@@ -1,0 +1,14 @@
+version: "3"
+services:
+  oracle:
+    image: gvenzl/oracle-xe:${ORACLE_VERSION}
+    container_name: oracle
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+    ports:
+      - 1521:1521
+      - 5500:5500
+    volumes:
+      - "./data:/opt/oracle/oradata"
+    restart: "always"
+    shm_size: 2gb
