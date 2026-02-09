@@ -61,7 +61,9 @@ dba-gadgets
   - [mysql_reverse_sql.py](./04-db-check/mysql_reverse_sql.py)
   - [mysql_state_dump.sh](./04-db-check/mysql_state_dump.sh)
   - [oracle_generating_focused_AWR_reports.sql](./04-db-check/oracle_generating_focused_AWR_reports.sql)
-  - [sr_zabbix_check.py](./04-db-check/sr_zabbix_check.py)
+  - [zabbix](./04-db-check/zabbix)
+    - [mysql_zabbix_monitor.sh](./04-db-check/zabbix/mysql_zabbix_monitor.sh)
+    - [sr_zabbix_check.py](./04-db-check/zabbix/sr_zabbix_check.py)
 - [05-db-install](./05-db-install) | 数据库安装
   - [docker](./05-db-install/docker)
     - [mongodb](./05-db-install/docker/mongodb)
