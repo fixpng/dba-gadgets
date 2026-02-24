@@ -1,0 +1,24 @@
+# 示例告警规则文件
+groups:
+  - name: example
+    interval: 30s
+    rules:
+      # 示例：Prometheus 目标下线告警
+      - alert: PrometheusTargetDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus target is down"
+          description: "Target {{ $labels.instance }} has been down for more than 1 minute."
+
+      # 示例：高 CPU 使用率告警（需要 node_exporter）
+      # - alert: HighCPUUsage
+      #   expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+      #   for: 5m
+      #   labels:
+      #     severity: warning
+      #   annotations:
+      #     summary: "High CPU usage detected"
+      #     description: "CPU usage is above 80% on {{ $labels.instance }}"

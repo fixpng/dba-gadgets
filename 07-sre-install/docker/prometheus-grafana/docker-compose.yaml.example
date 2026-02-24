@@ -1,0 +1,155 @@
+# Docker Compose 配置示例 - 包含常用 Exporter
+# 将此文件复制为 docker-compose.yaml 并根据需要启用相应的服务
+
+version: "3.8"
+
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/rules:/etc/prometheus/rules
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Node Exporter - 系统指标监控
+  # 取消注释以启用
+  # node-exporter:
+  #   image: prom/node-exporter:latest
+  #   container_name: node-exporter
+  #   restart: unless-stopped
+  #   ports:
+  #     - "9100:9100"
+  #   command:
+  #     - '--path.procfs=/host/proc'
+  #     - '--path.sysfs=/host/sys'
+  #     - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+  #   volumes:
+  #     - /proc:/host/proc:ro
+  #     - /sys:/host/sys:ro
+  #     - /:/rootfs:ro
+  #   networks:
+  #     - monitoring
+
+  # cAdvisor - Docker 容器监控
+  # 取消注释以启用
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:latest
+  #   container_name: cadvisor
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:ro
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker/:/var/lib/docker:ro
+  #     - /dev/disk/:/dev/disk:ro
+  #   networks:
+  #     - monitoring
+
+  # MySQL Exporter - MySQL 监控
+  # 取消注释并修改 DATA_SOURCE_NAME 以启用
+  # mysql-exporter:
+  #   image: prom/mysqld-exporter:latest
+  #   container_name: mysql-exporter
+  #   restart: unless-stopped
+  #   environment:
+  #     DATA_SOURCE_NAME: "user:password@(mysql-host:3306)/"
+  #   ports:
+  #     - "9104:9104"
+  #   networks:
+  #     - monitoring
+
+  # Redis Exporter - Redis 监控
+  # 取消注释并修改 REDIS_ADDR 以启用
+  # redis-exporter:
+  #   image: oliver006/redis_exporter:latest
+  #   container_name: redis-exporter
+  #   restart: unless-stopped
+  #   environment:
+  #     REDIS_ADDR: "redis://redis-host:6379"
+  #     # REDIS_PASSWORD: "your-password"  # 如果 Redis 有密码
+  #   ports:
+  #     - "9121:9121"
+  #   networks:
+  #     - monitoring
+
+  # PostgreSQL Exporter - PostgreSQL 监控
+  # 取消注释并修改 DATA_SOURCE_NAME 以启用
+  # postgres-exporter:
+  #   image: quay.io/prometheuscommunity/postgres-exporter:latest
+  #   container_name: postgres-exporter
+  #   restart: unless-stopped
+  #   environment:
+  #     DATA_SOURCE_NAME: "postgresql://user:password@postgres-host:5432/dbname?sslmode=disable"
+  #   ports:
+  #     - "9187:9187"
+  #   networks:
+  #     - monitoring
+
+  # MongoDB Exporter - MongoDB 监控
+  # 取消注释并修改 MONGODB_URI 以启用
+  # mongodb-exporter:
+  #   image: percona/mongodb_exporter:latest
+  #   container_name: mongodb-exporter
+  #   restart: unless-stopped
+  #   environment:
+  #     MONGODB_URI: "mongodb://user:password@mongodb-host:27017"
+  #   ports:
+  #     - "9216:9216"
+  #   networks:
+  #     - monitoring
+
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+
+networks:
+  monitoring:
+    driver: bridge
