@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 
 """
 files_tree 生成当前目录的树状结构及markdown格式链接。
@@ -28,8 +29,21 @@ def tree(directory, padding, only_dirs=False, only_files=False, markdown=False):
     items = os.listdir(directory)
     items.sort()
     
-    # 过滤掉指定的文件和目录，并添加描述
-    items = [item for item in items if item not in ['.git', 'README.md', 'LICENSE', 'conf', '.env']]
+    # 定义要排除的模式（使用正则表达式）
+    exclude_patterns = [
+        r'\.git',
+        r'README\.md',
+        r'LICENSE',
+        r'conf',
+        r'\.env',
+        r'\.vscode',
+        r'\.gitkeep',
+        r'docker-compose\.yaml\.example',
+        r'etc.*'  # 匹配以 "etc" 开头的任何项
+    ]
+    
+    # 过滤掉匹配排除模式的项
+    items = [item for item in items if not any(re.match(pattern, item) for pattern in exclude_patterns)]
     
     for index, item in enumerate(items):
         path = os.path.join(directory, item)

@@ -18,7 +18,7 @@ webServer.pprofEnable = false
 # [[proxies]]
 # name = "blossom"
 # type = "tcp"
-# localOP = "127.0.0.1"
+# localIP = "127.0.0.1"
 # localPort = 9999
 # remotePort = 9998
 # transport.useEncryption = true

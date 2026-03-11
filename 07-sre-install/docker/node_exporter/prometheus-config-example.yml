@@ -1,0 +1,43 @@
+# Prometheus 配置示例 - Node Exporter 监控配置
+# 将此配置添加到 Prometheus 的 prometheus.yml 文件的 scrape_configs 部分
+
+scrape_configs:
+  # Node Exporter - 系统指标监控
+  # 方式1: 如果 Prometheus 和 Node Exporter 在同一主机（推荐）
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['localhost:9100']
+    relabel_configs:
+      # 从 __address__ 中提取主机名作为 node_name
+      - source_labels: [__address__]
+        regex: '([^:]+):.*'
+        target_label: node_name
+        replacement: '${1}'
+      # 或者直接设置 node_name（需要替换为实际主机名）
+      # - target_label: node_name
+      #   replacement: 'your-hostname'
+
+  # 方式2: 如果 Prometheus 和 Node Exporter 在不同主机
+  # - job_name: 'node-exporter'
+  #   static_configs:
+  #     - targets: 
+  #         - 'node1.example.com:9100'
+  #         - 'node2.example.com:9100'
+  #         - 'node3.example.com:9100'
+  #   relabel_configs:
+  #     # 从 target 地址中提取主机名作为 node_name
+  #     - source_labels: [__address__]
+  #       regex: '([^:]+):.*'
+  #       target_label: node_name
+  #       replacement: '${1}'
+
+  # 方式3: 使用文件服务发现（适合多主机动态配置）
+  # - job_name: 'node-exporter'
+  #   file_sd_configs:
+  #     - files:
+  #         - '/etc/prometheus/targets/node-exporter.json'
+  #   relabel_configs:
+  #     - source_labels: [__address__]
+  #       regex: '([^:]+):.*'
+  #       target_label: node_name
+  #       replacement: '${1}'

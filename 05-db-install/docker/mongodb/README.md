@@ -41,8 +41,8 @@ sed -i '/volumes:/a \ \ \ \ \ \ - .mongodb-keyfile:/etc/mongodb-keyfile' docker-
 docker-compose up -d
 
 # 进入 mongo 命令行
-docker exec -it mongodb mongosh -u root -p "root.COM2025*" --authenticationDatabase=admin admin
-mongosh 127.0.0.1:27017  -u root -p "root.COM2025*" --authenticationDatabase=admin admin
+docker exec -it mongodb mongosh -u root -p "root.COM2025*" --authenticationDatabase=admin --db admin
+mongosh 127.0.0.1:27017 -u root -p "root.COM2025*" --authenticationDatabase=admin --db admin
 ```
 
 初始化副本集
