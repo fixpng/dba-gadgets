@@ -65,6 +65,7 @@ dba-gadgets
     - [mysql_zabbix_monitor.sh](./04-db-check/zabbix/mysql_zabbix_monitor.sh)
     - [sr_zabbix_check.py](./04-db-check/zabbix/sr_zabbix_check.py)
 - [05-db-install](./05-db-install) | 数据库安装
+  - [Oracle一键安装命令生成工具v2.0.html](./05-db-install/Oracle一键安装命令生成工具v2.0.html)
   - [docker](./05-db-install/docker)
     - [mongodb](./05-db-install/docker/mongodb)
       - [docker-compose.yaml](./05-db-install/docker/mongodb/docker-compose.yaml)

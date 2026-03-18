@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OracleShellInstall - 一键安装命令生成器</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@700;900&display=swap"
+      rel="stylesheet">
+    <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:#C74634;--red-glow:#e05a48;--bg:#0c0c10;--bg2:#14141b;--bg3:#1a1a24;
+  --card:#16161f;--card-hover:#1c1c28;--border:#2a2a38;--border-light:#3a3a4d;
+  --text:#e8e6e3;--text-dim:#8a8a9a;--text-muted:#5a5a6a;
+  --accent:#C74634;--accent2:#e8934a;--green:#3aba6a;--blue:#4a8fe8;
+  --font-body:'Noto Sans SC',sans-serif;--font-mono:'JetBrains Mono',monospace;
+  --font-display:'Orbitron',sans-serif;
+  --radius:10px;--radius-lg:16px;
+}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;min-height:100vh}
+body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+  background:radial-gradient(ellipse 80% 60% at 50% -20%,rgba(199,70,52,.08),transparent 70%),
+  radial-gradient(ellipse 60% 40% at 80% 100%,rgba(74,143,232,.04),transparent);
+  pointer-events:none;z-index:0}
+a{color:var(--red);text-decoration:none}
+a:hover{color:var(--red-glow)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border-light);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--red)}
+
+/* === HERO === */
+.hero{position:relative;padding:60px 20px 50px;text-align:center;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(180deg,rgba(199,70,52,.1) 0%,transparent 60%);pointer-events:none}
+.hero-grid{position:absolute;top:0;left:0;right:0;bottom:0;
+  background-image:linear-gradient(rgba(199,70,52,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(199,70,52,.05) 1px,transparent 1px);
+  background-size:60px 60px;opacity:.5;pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(199,70,52,.15);
+  border:1px solid rgba(199,70,52,.3);border-radius:20px;padding:6px 18px;
+  font-size:.75rem;color:var(--red-glow);letter-spacing:.5px;margin-bottom:20px;
+  font-weight:500;position:relative;z-index:1}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--red);
+  animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);font-weight:900;
+  letter-spacing:3px;color:#fff;position:relative;z-index:1;
+  text-shadow:0 0 40px rgba(199,70,52,.3)}
+.hero h1 span{color:var(--red)}
+.hero-sub{font-size:1.05rem;color:var(--text-dim);margin-top:12px;position:relative;z-index:1;
+  font-weight:300;max-width:680px;margin-left:auto;margin-right:auto}
+.hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px;position:relative;z-index:1}
+.hero-tag{background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  padding:6px 14px;font-size:.78rem;color:var(--text-dim);font-weight:400;
+  transition:all .25s}
+.hero-tag:hover{border-color:var(--red);color:var(--text);transform:translateY(-1px)}
+.hero-tag b{color:var(--text);margin-right:4px}
+
+/* === CONTAINER === */
+.container{max-width:1100px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+
+/* === MODE SELECTOR === */
+.mode-section{padding:10px 0 30px}
+.section-label{font-size:.8rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);
+  margin-bottom:16px;font-weight:500}
+.mode-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mode-card{background:var(--card);border:1.5px solid var(--border);border-radius:var(--radius-lg);
+  padding:24px 20px;cursor:pointer;transition:all .3s ease;text-align:center;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--red);transform:scaleX(0);transition:transform .3s}
+.mode-card:hover{border-color:var(--border-light);background:var(--card-hover);transform:translateY(-2px)}
+.mode-card.active{border-color:var(--red);background:rgba(199,70,52,.06)}
+.mode-card.active::before{transform:scaleX(1)}
+.mode-card .mode-icon{font-size:1.8rem;margin-bottom:10px;display:block}
+.mode-card .mode-title{font-size:1rem;font-weight:700;color:#fff;margin-bottom:4px}
+.mode-card .mode-desc{font-size:.75rem;color:var(--text-muted);line-height:1.5}
+
+/* === FORM === */
+.form-area{padding:10px 0 30px}
+.form-group-title{font-size:.95rem;font-weight:700;color:#fff;padding:14px 0 10px;
+  border-bottom:1px solid var(--border);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.form-group-title .ico{color:var(--red);font-size:1.1rem}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:28px}
+.field{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;transition:all .25s}
+.field:hover{border-color:var(--border-light)}
+.field:focus-within{border-color:var(--red);box-shadow:0 0 0 2px rgba(199,70,52,.1)}
+.field label{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--text-dim);
+  margin-bottom:8px;font-weight:500}
+.field label .flag{font-size:.65rem;padding:1px 6px;border-radius:3px;font-weight:600}
+.field label .req{background:rgba(199,70,52,.2);color:var(--red-glow)}
+.field label .opt{background:rgba(90,90,106,.2);color:var(--text-muted)}
+.field label .param{color:var(--accent2);font-family:var(--font-mono);font-size:.72rem}
+.field input,.field select{width:100%;background:var(--bg2);border:1px solid var(--border);
+  border-radius:6px;padding:9px 12px;color:var(--text);font-size:.88rem;
+  font-family:var(--font-mono);outline:none;transition:border .2s}
+.field input::placeholder{color:var(--text-muted);font-family:var(--font-body)}
+.field input:focus,.field select:focus{border-color:var(--red)}
+.field select{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238a8a9a' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center}
+.field select option{background:var(--bg2);color:var(--text)}
+
+/* === COMMAND PREVIEW === */
+.cmd-section{padding:10px 0 40px}
+.cmd-box{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.cmd-header{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-bottom:1px solid var(--border);background:var(--card)}
+.cmd-header .cmd-title{font-size:.85rem;font-weight:600;color:var(--text-dim);display:flex;align-items:center;gap:8px}
+.cmd-header .cmd-title .shell-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.cmd-header .cmd-title .d1{background:#ff5f57}.cmd-header .cmd-title .d2{background:#febc2e}.cmd-header .cmd-title .d3{background:#28c840}
+.cmd-btns{display:flex;gap:8px}
+.cmd-btn{background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  padding:7px 16px;font-size:.78rem;color:var(--text-dim);cursor:pointer;
+  transition:all .2s;font-family:var(--font-body);font-weight:500}
+.cmd-btn:hover{border-color:var(--red);color:var(--text)}
+.cmd-btn.copy-btn{background:rgba(199,70,52,.12);border-color:rgba(199,70,52,.3);color:var(--red-glow)}
+.cmd-btn.copy-btn:hover{background:rgba(199,70,52,.2)}
+.cmd-btn.copied{background:rgba(58,186,106,.15);border-color:rgba(58,186,106,.3);color:var(--green)}
+.cmd-code{padding:20px;font-family:var(--font-mono);font-size:.85rem;line-height:1.8;
+  color:var(--green);white-space:pre-wrap;word-break:break-all;min-height:60px;
+  max-height:300px;overflow-y:auto}
+.cmd-code .cm-flag{color:var(--accent2)}
+.cmd-code .cm-val{color:var(--blue)}
+.cmd-code .cm-script{color:#fff}
+.cmd-code .cm-slash{color:var(--text-muted);opacity:.6}
+.cmd-code .cm-comment{color:var(--text-muted);font-style:italic;opacity:.55}
+
+/* === FEATURES === */
+.features{padding:50px 0 30px}
+.features h2{text-align:center;font-size:1.6rem;font-weight:900;color:#fff;margin-bottom:8px}
+.features .feat-sub{text-align:center;color:var(--text-muted);font-size:.9rem;margin-bottom:36px}
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:40px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 18px;text-align:center;transition:all .3s}
+.feat-card:hover{border-color:var(--red);transform:translateY(-3px);box-shadow:0 8px 30px rgba(199,70,52,.08)}
+.feat-card .feat-ico{font-size:1.6rem;margin-bottom:10px;display:block}
+.feat-card .feat-name{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:4px}
+.feat-card .feat-desc{font-size:.72rem;color:var(--text-muted);line-height:1.5}
+
+/* === VERSIONS & OS === */
+.info-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px}
+.info-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+.info-panel h3{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.info-panel h3 .ico{color:var(--red)}
+.tag-list{display:flex;flex-wrap:wrap;gap:8px}
+.tag{background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  padding:5px 12px;font-size:.78rem;color:var(--text-dim);font-weight:500;transition:all .2s}
+.tag:hover{border-color:var(--red);color:var(--text)}
+.tag.highlight{border-color:rgba(199,70,52,.4);color:var(--red-glow);background:rgba(199,70,52,.08)}
+
+/* === STEPS === */
+.steps{margin-bottom:40px}
+.steps h3{text-align:center;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:24px}
+.steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 20px;text-align:center;position:relative}
+.step .step-num{font-family:var(--font-display);font-size:2rem;font-weight:900;
+  color:rgba(199,70,52,.2);margin-bottom:8px}
+.step .step-title{font-size:.92rem;font-weight:700;color:#fff;margin-bottom:6px}
+.step .step-desc{font-size:.78rem;color:var(--text-muted);line-height:1.5}
+
+/* === FOOTER === */
+.footer{border-top:1px solid var(--border);padding:30px 20px;text-align:center;
+  color:var(--text-muted);font-size:.78rem}
+.footer a{color:var(--red)}
+.footer .footer-row{display:flex;justify-content:center;gap:24px;margin-bottom:10px;flex-wrap:wrap}
+
+/* === ANIMATIONS === */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .5s ease both}
+.anim-d1{animation-delay:.1s}.anim-d2{animation-delay:.2s}.anim-d3{animation-delay:.3s}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .mode-cards{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .info-row{grid-template-columns:1fr}
+  .steps-row{grid-template-columns:1fr}
+  .cmd-header{flex-direction:column;gap:10px;align-items:flex-start}
+  .hero h1{font-size:1.8rem}
+}
+</style>
+  </head>
+  <body>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid"></div>
+      <div class="container">
+        <div class="hero-badge anim"><span class="dot"></span> v5.0.0 · 一键安装 ·
+          生产级别</div>
+        <h1 class="anim anim-d1"><span>Oracle</span>ShellInstall</h1>
+        <p class="hero-sub anim anim-d2">Oracle 数据库一键自动化安装脚本 —— 支持单机 / 单机ASM /
+          RAC集群三种部署模式<br>从操作系统配置到数据库创建，全程自动化，一条命令搞定</p>
+        <div class="hero-tags anim anim-d3">
+          <span class="hero-tag"><b>Oracle</b>11g/12c/18c/19c/21c/26ai</span>
+          <span class="hero-tag"><b>20+</b>Linux 发行版</span>
+          <span class="hero-tag"><b>3</b>种部署架构</span>
+          <span class="hero-tag"><b>100%</b>自动化安装</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+
+      <!-- MODE SELECTOR -->
+      <section class="mode-section">
+        <div class="section-label">选择安装模式</div>
+        <div class="mode-cards">
+          <div class="mode-card active" data-mode="single"
+            onclick="switchMode('single')">
+            <span class="mode-icon">&#9881;</span>
+            <div class="mode-title">单机模式</div>
+            <div class="mode-desc">Single Instance ·
+              文件系统存储<br>适用于开发测试及中小型业务</div>
+          </div>
+          <div class="mode-card" data-mode="standalone"
+            onclick="switchMode('standalone')">
+            <span class="mode-icon">&#9880;</span>
+            <div class="mode-title">单机 ASM 模式</div>
+            <div class="mode-desc">Standalone + ASM · Grid
+              Infrastructure<br>适用于需要 ASM 管理存储的单节点</div>
+          </div>
+          <div class="mode-card" data-mode="rac" onclick="switchMode('rac')">
+            <span class="mode-icon">&#9733;</span>
+            <div class="mode-title">RAC 集群模式</div>
+            <div class="mode-desc">Real Application Clusters<br>适用于高可用生产环境</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PARAMETER FORM -->
+      <section class="form-area" id="formArea">
+        <!-- Dynamically rendered by JS -->
+      </section>
+
+      <!-- COMMAND PREVIEW -->
+      <section class="cmd-section">
+        <div class="section-label">生成的安装命令</div>
+        <div class="cmd-box">
+          <div class="cmd-header">
+            <span class="cmd-title"><span class="shell-dot d1"></span><span
+                class="shell-dot d2"></span><span
+                class="shell-dot d3"></span>&nbsp;&nbsp;Terminal</span>
+            <div class="cmd-btns">
+              <button class="cmd-btn" onclick="resetForm()">重置参数</button>
+              <button class="cmd-btn copy-btn" id="copyBtn"
+                onclick="copyCmd()">复制命令</button>
+            </div>
+          </div>
+          <div class="cmd-code" id="cmdOutput"></div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="features">
+        <h2>核心特性</h2>
+        <p class="feat-sub">经过数百次生产环境验证的自动化安装方案</p>
+        <div class="feat-grid">
+          <div class="feat-card"><span class="feat-ico">&#9889;</span><div
+              class="feat-name">自动化安装</div><div class="feat-desc">从 OS
+              配置到建库全程自动化，无需人工干预</div></div>
+          <div class="feat-card"><span class="feat-ico">&#128230;</span><div
+              class="feat-name">多版本支持</div><div class="feat-desc">11gR2 / 12c /
+              18c / 19c / 21c / 26ai 全版本覆盖</div></div>
+          <div class="feat-card"><span class="feat-ico">&#128421;</span><div
+              class="feat-name">多系统兼容</div><div
+              class="feat-desc">CentOS/RHEL/OracleLinux 等 20+ 发行版</div></div>
+          <div class="feat-card"><span class="feat-ico">&#128279;</span><div
+              class="feat-name">RAC 集群支持</div><div class="feat-desc">自动配置 SSH
+              互信、Grid 安装、集群搭建</div></div>
+          <div class="feat-card"><span class="feat-ico">&#128190;</span><div
+              class="feat-name">ASM 存储管理</div><div class="feat-desc">自动配置
+              UDEV/multipath 绑盘及 ASM 磁盘组</div></div>
+          <div class="feat-card"><span class="feat-ico">&#128296;</span><div
+              class="feat-name">一键补丁升级</div><div class="feat-desc">支持
+              PSU/RU/OJVM 补丁自动安装</div></div>
+          <div class="feat-card"><span class="feat-ico">&#9989;</span><div
+              class="feat-name">智能参数校验</div><div
+              class="feat-desc">安装前自动校验所有参数，避免配置错误</div></div>
+          <div class="feat-card"><span class="feat-ico">&#128196;</span><div
+              class="feat-name">安装日志追踪</div><div
+              class="feat-desc">完整安装日志输出，便于问题排查</div></div>
+        </div>
+
+        <!-- VERSIONS & OS -->
+        <div class="info-row">
+          <div class="info-panel">
+            <h3><span class="ico">&#9670;</span> 支持的 Oracle 版本</h3>
+            <div class="tag-list">
+              <span class="tag">Oracle 11gR2</span>
+              <span class="tag">Oracle 12cR1</span>
+              <span class="tag">Oracle 12cR2</span>
+              <span class="tag">Oracle 18c</span>
+              <span class="tag highlight">Oracle 19c</span>
+              <span class="tag">Oracle 21c</span>
+              <span class="tag highlight">Oracle 26ai</span>
+            </div>
+          </div>
+          <div class="info-panel">
+            <h3><span class="ico">&#9670;</span> 支持的操作系统</h3>
+            <div class="tag-list">
+              <span class="tag">CentOS 7/8</span><span class="tag">RHEL
+                7/8/9</span>
+              <span class="tag">OracleLinux</span><span
+                class="tag highlight">Rocky Linux</span>
+              <span class="tag">Anolis OS</span><span
+                class="tag">openEuler</span>
+              <span class="tag highlight">麒麟 Kylin</span><span class="tag">统信
+                UOS</span>
+              <span class="tag">Ubuntu</span><span class="tag">Debian</span>
+              <span class="tag">AlmaLinux</span><span class="tag">SLES</span>
+              <span class="tag">Fedora</span><span class="tag">Deepin</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- USAGE STEPS -->
+        <div class="steps">
+          <h3>三步完成安装</h3>
+          <div class="steps-row">
+            <div class="step">
+              <div class="step-num">01</div>
+              <div class="step-title">上传软件包</div>
+              <div class="step-desc">将 OracleShellInstall.sh 脚本和 Oracle
+                安装介质上传至服务器 /soft 目录</div>
+            </div>
+            <div class="step">
+              <div class="step-num">02</div>
+              <div class="step-title">配置参数</div>
+              <div class="step-desc">在本页面选择安装模式，填写环境参数，实时生成安装命令</div>
+            </div>
+            <div class="step">
+              <div class="step-num">03</div>
+              <div class="step-title">执行安装</div>
+              <div class="step-desc">复制生成的命令，在服务器 /soft 目录下以 root 用户执行即可</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- container -->
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-row">
+        <span>OracleShellInstall v5.0.0</span>
+        <span>作者：Lucifer</span>
+      </div>
+      <div>Copyright &copy; 2022-2099 Pengcheng Liu · 仅供学习交流</div>
+    </footer>
+    <script data-cfasync="false"
+      src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const PARAMS = {
+  // ---- COMMON (all modes) ----
+  common: [
+    {group:'基础配置',icon:'&#9670;',fields:[
+      {flag:'-lf',label:'公网网卡名称',type:'text',ph:'eth0',req:true},
+      {flag:'-n',label:'主机名',type:'text',def:'orcl'},
+      {flag:'-o',label:'数据库名称',type:'text',def:'orcl'},
+      {flag:'-d',label:'软件安装根目录',type:'text',def:'/u01'},
+    ]},
+    {group:'用户与密码',icon:'&#128274;',fields:[
+      {flag:'-ou',label:'Oracle 用户名',type:'text',def:'oracle'},
+      {flag:'-op',label:'Oracle 用户密码',type:'password',def:'oracle'},
+      {flag:'-dp',label:'数据库 sys/system 密码',type:'password',def:'oracle'},
+    ]},
+    {group:'数据库参数',icon:'&#128451;',fields:[
+      {flag:'-ds',label:'数据库字符集',type:'select',opts:['AL32UTF8','ZHS16GBK','ZHS32GB18030','UTF8','US7ASCII','WE8ISO8859P1','WE8MSWIN1252','JA16SJIS','KO16MSWIN949'],def:'AL32UTF8'},
+      {flag:'-ns',label:'国家字符集',type:'select',opts:['AL16UTF16','UTF8'],def:'AL16UTF16'},
+      {flag:'-dbs',label:'数据库块大小',type:'select',opts:['2048','4096','8192','16384','32768'],def:'8192'},
+      {flag:'-redo',label:'Redo 日志大小 (MB)',type:'number',def:'1024'},
+      {flag:'-er',label:'启用归档模式',type:'select',opts:['true','false'],def:'true'},
+      {flag:'-pdb',label:'PDB 名称 (CDB架构)',type:'text',ph:'pdb01,pdb02'},
+    ]},
+    {group:'系统选项',icon:'&#9881;',fields:[
+      {flag:'-lrp',label:'配置本地软件源',type:'select',opts:['Y','N'],def:'Y'},
+      {flag:'-nrp',label:'配置网络软件源',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-gui',label:'安装图形界面',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-opd',label:'优化数据库参数',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-hf',label:'配置大页内存',type:'select',opts:['Y','N'],def:'N'},
+    ]},
+  ],
+  // ---- SINGLE ONLY ----
+  single: [
+    {group:'单机存储与补丁',icon:'&#128190;',fields:[
+      {flag:'-ord',label:'数据文件目录',type:'text',def:'/oradata'},
+      {flag:'-ard',label:'归档文件目录',type:'text',def:'/oradata/archivelog'},
+      {flag:'-opa',label:'Oracle PSU/RU 补丁编号',type:'text',ph:'如 35940989'},
+      {flag:'-jpa',label:'OJVM PSU/RU 补丁编号',type:'text',ph:'如 35926646'},
+      {flag:'-m',label:'仅配置操作系统',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-ud',label:'安装到 DB 软件结束',type:'select',opts:['Y','N'],def:'N'},
+    ]},
+  ],
+  // ---- STANDALONE ASM ----
+  standalone: [
+    {group:'Grid 用户',icon:'&#128100;',fields:[
+      {flag:'-gu',label:'Grid 用户名',type:'text',def:'grid'},
+      {flag:'-gp',label:'Grid 用户密码',type:'password',def:'oracle'},
+    ]},
+    {group:'ASM 磁盘配置',icon:'&#128190;',fields:[
+      {flag:'-adc',label:'脚本配置 ASM 磁盘',type:'select',opts:['Y','N'],def:'Y'},
+      {flag:'-mp',label:'配置 multipath 多路径',type:'select',opts:['Y','N'],def:'Y'},
+      {flag:'-dd',label:'DATA 磁盘列表',type:'text',ph:'/dev/sdb,/dev/sdc',req:true},
+      {flag:'-dn',label:'DATA 磁盘组名称',type:'text',def:'DATA'},
+      {flag:'-dr',label:'DATA 磁盘组冗余度',type:'select',opts:['EXTERNAL','NORMAL','HIGH'],def:'EXTERNAL'},
+    ]},
+    {group:'补丁与选项',icon:'&#128296;',fields:[
+      {flag:'-gpa',label:'Grid PSU/RU 补丁编号',type:'text',ph:'如 35940989'},
+      {flag:'-opa',label:'Oracle PSU/RU 补丁编号',type:'text',ph:'如 35940989'},
+      {flag:'-jpa',label:'OJVM PSU/RU 补丁编号',type:'text',ph:'如 35926646'},
+      {flag:'-m',label:'仅配置操作系统',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-ud',label:'安装到 DB 软件结束',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-vbox',label:'VirtualBox 环境修复',type:'select',opts:['Y','N'],def:'N'},
+    ]},
+  ],
+  // ---- RAC ----
+  rac: [
+    {group:'RAC 节点配置',icon:'&#128279;',fields:[
+      {flag:'-pf',label:'心跳网卡名称',type:'text',ph:'eth3,eth4',req:true},
+      {flag:'-hn',label:'所有节点主机名',type:'text',ph:'orcl01,orcl02',req:true},
+      {flag:'-ri',label:'所有节点公网 IP',type:'text',ph:'10.211.55.100,10.211.55.101',req:true},
+      {flag:'-vi',label:'所有节点虚拟 IP',type:'text',ph:'10.211.55.102,10.211.55.103',req:true},
+      {flag:'-si',label:'Scan IP 地址',type:'text',ph:'10.211.55.105',req:true},
+      {flag:'-rp',label:'root 用户密码',type:'password',ph:'所有节点需一致',req:true},
+      {flag:'-cn',label:'集群名称',type:'text',ph:'orcl-cluster'},
+      {flag:'-sn',label:'Scan 名称',type:'text',ph:'orcl-scan'},
+    ]},
+    {group:'Grid 用户',icon:'&#128100;',fields:[
+      {flag:'-gu',label:'Grid 用户名',type:'text',def:'grid'},
+      {flag:'-gp',label:'Grid 用户密码',type:'password',def:'oracle'},
+    ]},
+    {group:'ASM 磁盘配置',icon:'&#128190;',fields:[
+      {flag:'-adc',label:'脚本配置 ASM 磁盘',type:'select',opts:['Y','N'],def:'Y'},
+      {flag:'-mp',label:'配置 multipath 多路径',type:'select',opts:['Y','N'],def:'Y'},
+      {flag:'-od',label:'OCR 磁盘列表',type:'text',ph:'/dev/sdb',req:true},
+      {flag:'-dd',label:'DATA 磁盘列表',type:'text',ph:'/dev/sdc',req:true},
+      {flag:'-ad',label:'ARCH 磁盘列表',type:'text',ph:'/dev/sdd'},
+      {flag:'-on',label:'OCR 磁盘组名称',type:'text',def:'OCR'},
+      {flag:'-dn',label:'DATA 磁盘组名称',type:'text',def:'DATA'},
+      {flag:'-an',label:'ARCH 磁盘组名称',type:'text',def:'ARCH'},
+      {flag:'-or',label:'OCR 磁盘组冗余度',type:'select',opts:['EXTERNAL','NORMAL','HIGH'],def:'EXTERNAL'},
+      {flag:'-dr',label:'DATA 磁盘组冗余度',type:'select',opts:['EXTERNAL','NORMAL','HIGH'],def:'EXTERNAL'},
+      {flag:'-ar',label:'ARCH 磁盘组冗余度',type:'select',opts:['EXTERNAL','NORMAL','HIGH'],def:'EXTERNAL'},
+    ]},
+    {group:'网络与时间',icon:'&#127760;',fields:[
+      {flag:'-tsi',label:'时间服务器 IP',type:'text',ph:'如 10.211.55.1'},
+      {flag:'-dns',label:'配置 DNS',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-dnsn',label:'DNS 服务器名称',type:'text',ph:'如 orcl-dns'},
+      {flag:'-dnsi',label:'DNS 服务器 IP',type:'text',ph:'如 10.211.55.200'},
+    ]},
+    {group:'补丁与选项',icon:'&#128296;',fields:[
+      {flag:'-gpa',label:'Grid PSU/RU 补丁编号',type:'text',ph:'如 35940989'},
+      {flag:'-opa',label:'Oracle PSU/RU 补丁编号',type:'text',ph:'如 35940989'},
+      {flag:'-jpa',label:'OJVM PSU/RU 补丁编号',type:'text',ph:'如 35926646'},
+      {flag:'-m',label:'仅配置操作系统',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-ug',label:'安装到 Grid 软件结束',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-ud',label:'安装到 DB 软件结束',type:'select',opts:['Y','N'],def:'N'},
+      {flag:'-vbox',label:'VirtualBox 环境修复',type:'select',opts:['Y','N'],def:'N'},
+    ]},
+  ],
+};
+
+// Map mode names
+const MODE_MAP = {single:'single',standalone:'standalone',rac:'rac'};
+let currentMode = 'single';
+
+// Build defaults map per mode
+function getDefaults(mode) {
+  const defs = {};
+  const groups = [...PARAMS.common, ...(PARAMS[mode]||[])];
+  groups.forEach(g => g.fields.forEach(f => { if(f.def!==undefined) defs[f.flag]=f.def; }));
+  return defs;
+}
+
+function renderForm(mode) {
+  const area = document.getElementById('formArea');
+  const groups = [...PARAMS.common, ...(PARAMS[mode]||[])];
+  let html = '';
+  groups.forEach(g => {
+    html += `<div class="form-group-title"><span class="ico">${g.icon}</span> ${g.group}</div><div class="form-grid">`;
+    g.fields.forEach(f => {
+      const id = 'f_'+f.flag.replace(/-/g,'_');
+      const reqBadge = f.req ? '<span class="flag req">必填</span>' : '<span class="flag opt">选填</span>';
+      html += `<div class="field"><label>${reqBadge} <span class="param">${f.flag}</span> ${f.label}</label>`;
+      if(f.type==='select') {
+        html += `<select id="${id}" onchange="genCmd()">`;
+        f.opts.forEach(o => { html += `<option value="${o}"${o===f.def?' selected':''}>${o}</option>`; });
+        html += '</select>';
+      } else {
+        const t = f.type==='password'?'password':'text';
+        const v = f.def||'';
+        const ph = f.ph||'';
+        html += `<input type="${t}" id="${id}" value="${v}" placeholder="${ph}" oninput="genCmd()">`;
+      }
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+  area.innerHTML = html;
+  genCmd();
+}
+
+function genCmd() {
+  const defaults = getDefaults(currentMode);
+  const groups = [...PARAMS.common, ...(PARAMS[currentMode]||[])];
+  let parts = [];
+  groups.forEach(g => g.fields.forEach(f => {
+    const id = 'f_'+f.flag.replace(/-/g,'_');
+    const el = document.getElementById(id);
+    if(!el) return;
+    const val = el.value.trim();
+    if(!val) return;
+    // Skip if matches default
+    if(f.def!==undefined && val === String(f.def)) return;
+    parts.push({flag:f.flag, val, label:f.label});
+  }));
+
+  // Build multi-line command with \ continuation and # comments
+  const modeLabels = {single:'单机模式',standalone:'单机 ASM 模式',rac:'RAC 集群模式'};
+  let lines = [];
+  lines.push(`<span class="cm-script">sh OracleShellInstall.sh</span> <span class="cm-slash">\\</span>`);
+  lines.push(`<span class="cm-flag">-install_mode</span> <span class="cm-val">${currentMode}</span> <span class="cm-comment">\`# ${modeLabels[currentMode]}\`</span><span class="cm-slash">\\</span>`);
+  parts.forEach((p, i) => {
+    const v = p.val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const isLast = (i === parts.length - 1);
+    const slash = isLast ? '' : '<span class="cm-slash">\\</span>';
+    lines.push(`<span class="cm-flag">${p.flag}</span> <span class="cm-val">${v}</span> <span class="cm-comment">\`# ${p.label}\`</span>${slash}`);
+  });
+  document.getElementById('cmdOutput').innerHTML = lines.join('\n');
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-card').forEach(c => c.classList.toggle('active', c.dataset.mode===mode));
+  renderForm(mode);
+}
+
+function resetForm() {
+  renderForm(currentMode);
+}
+
+function copyCmd() {
+  const text = document.getElementById('cmdOutput').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '已复制';
+    btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='复制命令'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// Init
+renderForm('single');
+</script>
+  </body>
+</html>
