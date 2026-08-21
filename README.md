@@ -17,6 +17,8 @@ dba-gadgets
   - [sr_backup_snapshot.py](./01-backup-restore-archive/sr_backup_snapshot.py)
   - [sr_restore_snapshot.py](./01-backup-restore-archive/sr_restore_snapshot.py)
 - [02-data-processing](./02-data-processing) | 数据处理
+  - [__pycache__](./02-data-processing/__pycache__)
+  - [data_duplicate](./02-data-processing/data_duplicate)
   - [mysql_concurrency_test.py](./02-data-processing/mysql_concurrency_test.py)
   - [mysql_csv_to_table.py](./02-data-processing/mysql_csv_to_table.py)
   - [open_metadata_lineage](./02-data-processing/open_metadata_lineage)
@@ -39,6 +41,7 @@ dba-gadgets
   - [oracle_tbs_autoext.sh](./02-data-processing/oracle_tbs_autoext.sh)
   - [redis_del_big_list.py](./02-data-processing/redis_del_big_list.py)
   - [redis_del_idle_key.py](./02-data-processing/redis_del_idle_key.py)
+  - [redis_del_prefix_keys.py](./02-data-processing/redis_del_prefix_keys.py)
   - [sr_alter_table_rn.py](./02-data-processing/sr_alter_table_rn.py)
   - [sr_alter_view_rn.py](./02-data-processing/sr_alter_view_rn.py)
 - [03-files-processing](./03-files-processing) | 文件处理
